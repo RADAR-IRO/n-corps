@@ -44,10 +44,12 @@ function T(x::Body)
 end
 
 function Tprime(x::Body)
-    ξ1 = 1.5*x.p/(x.m*x.r^2)
-    ξ2 = -ξ1
-    ξ3 = 0
-    return Ξ(ξ1, ξ2, ξ3)
+    dξ_1dr = 1.5/x.r^2
+    dξ_2dr = -x.l^2/x.m * 1/x.r^3
+    dξ_2dp = x.p/x.m
+    dξ_2dl = x.l/(x.m * x.r^2)
+    dξ_3dl = 1
+    return [ dξ_1dr 0 0 0 0 ; dξ_2dr 0 dξ_2dp dξ_2dl 0 ; 0 0 0 dξ_3dl 0 ]
 end
 
 function solveForTheta(θ_0::Float64, l, m, r_0, r, k, v)
@@ -58,7 +60,7 @@ function solveForTheta(θ_0::Float64, l, m, r_0, r, k, v)
     if θ_1 - θ_0 <= 0
         return θ_1
     else 
-        return newtonForTheta(θ_1)
+        return solveForTheta(θ_1, l, m, r_0, r, k, v)
     end
 end
 
